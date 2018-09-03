@@ -10,7 +10,6 @@ import cn.foretree.db.User
 import com.facebook.stetho.Stetho
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import org.reactivestreams.Subscriber
@@ -24,48 +23,56 @@ class MainActivity : AppCompatActivity() {
         AppDatabaseManager.getInstance().init(this.application)
     }
 
-    @SuppressLint("CheckResult")
     fun clickInsert(view: View) {
-        getFlowable(User("谢杨学君", 1))
-                .subscribe(Consumer {
-                    Log.d("===>", "success  ==> $it")
-                })
+        getFlowable({
+            AppDatabaseManager.getInstance().getUserDao().insert(*arrayOf(
+                    User("谢杨学君", 1, 1),
+                    User("谢杨学君", 1, 2),
+                    User("谢杨学君", 1),
+                    User("谢杨学君", 1),
+                    User("谢杨学君", 1)
+            ))
+        }).subscribe({
+            Log.d("===>", "success (size= ${it.size} and ${it.joinToString()})")
+        }).isDisposed
     }
 
     fun clickDelete(view: View) {
-
+        getFlowable({
+            AppDatabaseManager.getInstance().getUserDao().delete(*arrayOf(
+                    User("谢杨学君", 1, 1),
+                    User("谢杨学君", 1, 2)
+            ))
+        }).subscribe({
+            Log.d("===>", "success (count = $it)")
+        }).isDisposed
     }
 
     fun clickUpdate(view: View) {
-
+        getFlowable({
+            AppDatabaseManager.getInstance().getUserDao().delete(*arrayOf(
+                    User("谢杨学君", 1),
+                    User("谢杨学君", 2)
+            ))
+        }).subscribe({
+            Log.d("===>", "success (count = $it)")
+        }).isDisposed
     }
 
     fun clickQueryAll(view: View) {
-        object : Flowable<List<User>>() {
-            override fun subscribeActual(s: Subscriber<in List<User>>) {
-                try {
-                    val list = AppDatabaseManager.getInstance().getUserDao().queryAll()
-                    s.onNext(list)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    s.onError(e)
-                }
-                s.onComplete()
-            }
-        }.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe {
-                    val fromList = JsonParserUtil.fromList(it)
-                    tv_message.text = fromList
-                }
+        getFlowable({
+            AppDatabaseManager.getInstance().getUserDao().queryAll()
+        }).subscribe({
+            val fromList = JsonParserUtil.fromList(it)
+            tv_message.text = fromList
+        }).isDisposed
     }
 
-    fun getFlowable(user: User): Flowable<Boolean> {
-        return object : Flowable<Boolean>() {
-            override fun subscribeActual(s: Subscriber<in Boolean>) {
+    fun <T> getFlowable(method: () -> T): Flowable<T> {
+        return object : Flowable<T>() {
+            override fun subscribeActual(s: Subscriber<in T>) {
                 try {
-                    AppDatabaseManager.getInstance().getUserDao().insert(user)
-                    s.onNext(true)
+                    s.onNext(method.invoke())
                 } catch (e: Exception) {
                     e.printStackTrace()
                     s.onError(e)

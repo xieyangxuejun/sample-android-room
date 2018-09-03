@@ -105,6 +105,15 @@ class AppDatabaseManager {
 }
 ```
 
+## 注意
+
+- 如果id自增, 需要放在data class 后面赋值为0, ~~网上说需要无参数的构造函数,不需要~~
+- 注解@field: SerializedName("user_name")和@ColumnInfo(name = "user_name"),前者是序列化的变量名,后者是数据表的变量名.如果不写就用类成员变量名.
+- **重点**:不要在主线程操作数据(CRUD).....
+- Insert插入多个数据返回的是List<Long> ids
+- delete也有返回值是Int,删除的个数, 同update
+- 查询就有很多了..order..like..=..
+
 ## 使用
 
 - 初始化

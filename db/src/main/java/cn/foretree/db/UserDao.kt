@@ -8,14 +8,15 @@ import android.arch.persistence.room.*
  */
 @Dao
 interface UserDao {
+    //多个数据
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(vararg model: User)
+    fun insert(vararg user: User): List<Long>
 
     @Delete
-    fun delete(model: User)
+    fun delete(vararg user: User): Int
 
     @Update
-    fun update(model: User)
+    fun update(vararg user: User): Int
 
     @Query("SELECT * FROM user")
     fun queryAll(): List<User>
