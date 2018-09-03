@@ -105,6 +105,39 @@ class AppDatabaseManager {
 }
 ```
 
+## 使用
+
+- 初始化
+
+```
+override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        Stetho.initializeWithDefaults(this)
+        AppDatabaseManager.getInstance().init(this.application)
+}
+```
+
+- 增删改查
+
+```
+object : Flowable<Boolean>() {
+            override fun subscribeActual(s: Subscriber<in Boolean>) {
+                try {
+                    AppDatabaseManager.getInstance().getUserDao().insert(user)
+                    s.onNext(true)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    s.onError(e)
+                }
+                s.onComplete()
+            }
+        }.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+```
+
+
+
 ## 总结一下
 
 可以当成单独的模块来使用, fork然后写自己的Entities就行了.

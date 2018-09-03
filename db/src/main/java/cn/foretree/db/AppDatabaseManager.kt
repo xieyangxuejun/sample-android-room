@@ -35,7 +35,6 @@ class AppDatabaseManager {
             if (mContext == null) {
                 mContext = app.applicationContext
             }
-            Room.inMemoryDatabaseBuilder()
             mAppDatabase = Room.databaseBuilder(
                     mContext!!, AppDatabase::class.java, databaseName
             ).build()
