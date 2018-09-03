@@ -130,11 +130,56 @@ override fun onCreate(savedInstanceState: Bundle?) {
 - 增删改查
 
 ```
-object : Flowable<Boolean>() {
-            override fun subscribeActual(s: Subscriber<in Boolean>) {
+fun clickInsert(view: View) {
+        getFlowable({
+            AppDatabaseManager.getInstance().getUserDao().insert(*arrayOf(
+                    User("谢杨学君", 1, 1),
+                    User("谢杨学君", 1, 2),
+                    User("谢杨学君", 1),
+                    User("谢杨学君", 1),
+                    User("谢杨学君", 1)
+            ))
+        }).subscribe({
+            Log.d("===>", "success (size= ${it.size} and ${it.joinToString()})")
+        }).isDisposed
+    }
+
+    fun clickDelete(view: View) {
+        getFlowable({
+            AppDatabaseManager.getInstance().getUserDao().delete(*arrayOf(
+                    User("谢杨学君", 1, 1),
+                    User("谢杨学君", 1, 2)
+            ))
+        }).subscribe({
+            Log.d("===>", "success (count = $it)")
+        }).isDisposed
+    }
+
+    fun clickUpdate(view: View) {
+        getFlowable({
+            AppDatabaseManager.getInstance().getUserDao().delete(*arrayOf(
+                    User("谢杨学君", 1),
+                    User("谢杨学君", 2)
+            ))
+        }).subscribe({
+            Log.d("===>", "success (count = $it)")
+        }).isDisposed
+    }
+
+    fun clickQueryAll(view: View) {
+        getFlowable({
+            AppDatabaseManager.getInstance().getUserDao().queryAll()
+        }).subscribe({
+            val fromList = JsonParserUtil.fromList(it)
+            tv_message.text = fromList
+        }).isDisposed
+    }
+
+    fun <T> getFlowable(method: () -> T): Flowable<T> {
+        return object : Flowable<T>() {
+            override fun subscribeActual(s: Subscriber<in T>) {
                 try {
-                    AppDatabaseManager.getInstance().getUserDao().insert(user)
-                    s.onNext(true)
+                    s.onNext(method.invoke())
                 } catch (e: Exception) {
                     e.printStackTrace()
                     s.onError(e)
@@ -143,6 +188,7 @@ object : Flowable<Boolean>() {
             }
         }.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+    }
 ```
 
 
