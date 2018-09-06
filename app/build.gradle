@@ -32,6 +32,9 @@ dependencies {
 
     api project(':db')
     implementation 'com.facebook.stetho:stetho:1.5.0'
+    implementation "com.google.code.gson:gson:$gson_version"
     implementation "io.reactivex.rxjava2:rxandroid:$rxandroid_version"
     implementation "io.reactivex.rxjava2:rxjava:$rxjava_version"
+
+    //implementation 'com.github.xieyangxuejun:sample-android-room:1.0.0-beta01'
 }
