@@ -43,4 +43,5 @@ class AppDatabaseManager {
 
 
     fun getUserDao(): UserDao = mAppDatabase?.getUserDao()!!
+    fun getRepoDao(): RepoDao = mAppDatabase?.getRepoDao()!!
 }

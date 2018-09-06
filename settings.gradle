@@ -1,1 +1,3 @@
-include ':app', ':db'
+include ':app', ':db', ':dbstar'
+
+//rootProject.name = 'android-room'
