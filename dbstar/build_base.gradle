@@ -5,7 +5,7 @@ apply plugin: 'kotlin-kapt'
 
 apply plugin: 'com.github.dcendents.android-maven'
 
-group = 'cn.foretree'
+group = 'com.github.xieyangxuejun'
 version = '1.0.0-beta01'
 
 android {
