@@ -1,22 +1,19 @@
-package cn.foretree.samples
+package cn.foretree.db
 
-import android.arch.paging.LivePagedListBuilder
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
-import cn.foretree.db.star.AppDatabaseManager
-import cn.foretree.db.star.EDIT_DATABASE_NAME
-import cn.foretree.db.star.EditData
-import cn.foretree.db.star.RxJava2Helper
 import com.facebook.stetho.Stetho
+import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import org.reactivestreams.Subscriber
 
-class MainActivity : AppCompatActivity() {
+class DemoActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,45 +22,32 @@ class MainActivity : AppCompatActivity() {
         AppDatabaseManager.getInstance().init(this.application)
     }
 
-    //分页查询不行
-    fun clickQueryRx(view: View) {
-        RxJava2Helper.getFlowable {
-            AppDatabaseManager.getInstance().getEditDataDao().pagingQuery(0).apply {
-            }
-        }.subscribe({
-            it.create()
-            val liveData = LivePagedListBuilder(it, 20).build()
-            val value = liveData.value
-            val toList = value?.toList()
-            val fromList = JsonParserUtil.fromList(toList)
-            tv_message.text = fromList
-        }).isDisposed
-    }
-
     fun clickInsert(view: View) {
         getFlowable({
             AppDatabaseManager.getInstance().run {
-                getEditDataDao()?.insert(*arrayOf(
-                        EditData(123, 1, "{json:123}", 1),
-                        EditData(123, 1, "{json:123}", 2),
-                        EditData(123, 1, "{json:123}", 3)
+                getUserDao().insert(*arrayOf(
+                        User("谢杨学君", 1, arrayList(), 1),
+                        User("谢杨学君", 1, arrayList(), 2),
+                        getUser(),
+                        getUser(),
+                        getUser()
+                ))
+                getRepoDao().insert(*arrayOf(
+                        Repo("xieyangxuejun", "我是最烧的", Repo.Owner("ddd", "hhhh"), 1),
+                        Repo("xieyangxuejun", "我是最烧的")
                 ))
             }
         }).subscribe({
-            Log.d("===>", "success (size= ${it?.size} and ${it?.joinToString()})")
+            Log.d("===>", "success (size= ${it.size} and ${it.joinToString()})")
         }).isDisposed
     }
 
     fun clickDelete(view: View) {
         getFlowable({
-            AppDatabaseManager.getInstance().getEditDataDao()?.run {
-                //                delete(*arrayOf(
-//                        EditData(0, 0, "",1),
-//                        EditData(0, 0, "",2),
-//                        EditData(0, 0, "",3)
-//                ))
-                delete(1, 2, 3)
-            }
+            AppDatabaseManager.getInstance().getUserDao().delete(*arrayOf(
+                    User("谢杨学君", 1, arrayList(), 1),
+                    User("谢杨学君", 1, arrayList(), 2)
+            ))
         }).subscribe({
             Log.d("===>", "success (count = $it)")
         }).isDisposed
@@ -71,8 +55,10 @@ class MainActivity : AppCompatActivity() {
 
     fun clickUpdate(view: View) {
         getFlowable({
-            AppDatabaseManager.getInstance().getEditDataDao()?.update(EditData(0, 0, "", 1))
-            AppDatabaseManager.getInstance().getEditDataDao()?.update(EditData(0, 0, "", 2))
+            AppDatabaseManager.getInstance().getUserDao().delete(*arrayOf(
+                    getUser(),
+                    User("谢杨学君", 2, arrayList())
+            ))
         }).subscribe({
             Log.d("===>", "success (count = $it)")
         }).isDisposed
@@ -81,9 +67,12 @@ class MainActivity : AppCompatActivity() {
 
     fun clickQueryAll(view: View) {
         getFlowable({
-            AppDatabaseManager.getInstance().getEditDataDao()?.queryAll()
+            AppDatabaseManager.getInstance().run {
+                getUserDao().queryAll()
+                getRepoDao().queryAll()
+            }
         }).subscribe({
-            val fromList = JsonParserUtil.fromList(it)
+            val fromList = fromList(it)
             tv_message.text = fromList
         }).isDisposed
     }
@@ -101,5 +90,26 @@ class MainActivity : AppCompatActivity() {
             }
         }.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+    }
+
+
+    private fun getUser() = User("谢杨学君", 1, arrayList())
+
+    private fun arrayList(): ArrayList<String> {
+        return arrayListOf(
+                "123", "wowowo", "😆😆", "-=-=-=="
+        )
+    }
+
+    fun <T> fromList(list: List<T>?): String? {
+        if (list == null || list.isEmpty()) {
+            return null
+        }
+        try {
+            return Gson().toJson(list)
+        } catch (ignored: JsonSyntaxException) {
+        }
+
+        return null
     }
 }

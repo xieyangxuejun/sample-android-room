@@ -35,7 +35,7 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxandroid:$rxandroid_version"
     implementation "io.reactivex.rxjava2:rxjava:$rxjava_version"
 
-    //api project(':db')
+    api project(':dbdemo')
     api project(':dbstar')
     //implementation 'com.github.xieyangxuejun:sample-android-room:1.0.0-beta01'
 }

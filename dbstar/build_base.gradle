@@ -6,7 +6,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'com.github.dcendents.android-maven'
 
 group = 'com.github.xieyangxuejun'
-version = '1.0.0-beta04'
+version = '1.0.1-beta02'
 
 android {
     compileSdkVersion 27
@@ -37,6 +37,17 @@ dependencies {
 
     //android-room
     implementation "com.google.code.gson:gson:$gson_version"
-    api "android.arch.persistence.room:runtime:$room_version"
-    kapt "android.arch.persistence.room:compiler:$room_version"
+
+    api "android.arch.lifecycle:extensions:$arch_version"
+    api "android.arch.persistence.room:runtime:$arch_version"
+    kapt "android.arch.persistence.room:compiler:$arch_version"
+    // optional - RxJava support for Room
+    implementation "android.arch.persistence.room:rxjava2:$arch_version"
+
+    //paging
+    api "android.arch.paging:runtime:$paging_version"
+    api "android.arch.paging:rxjava2:$paging_version"
+
+    implementation "io.reactivex.rxjava2:rxandroid:$rxandroid_version"
+    implementation "io.reactivex.rxjava2:rxjava:$rxjava_version"
 }

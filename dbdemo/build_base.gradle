@@ -37,6 +37,6 @@ dependencies {
 
     //android-room
     implementation "com.google.code.gson:gson:$gson_version"
-    api "android.arch.persistence.room:runtime:$room_version"
-    kapt "android.arch.persistence.room:compiler:$room_version"
+    api "android.arch.persistence.room:runtime:$arch_version"
+    kapt "android.arch.persistence.room:compiler:$arch_version"
 }
