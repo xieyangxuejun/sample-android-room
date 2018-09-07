@@ -47,16 +47,16 @@ interface EditDataDao {
     @Query("SELECT * FROM edit_data WHERE id > :beginId ORDER BY timestamp DESC LIMIT 20")
     fun pagingQuery(beginId: Long): DataSource.Factory<Int, EditData>
 
-    @Query("SELECT * FROM edit_data WHERE userId IN (:userIDs) ORDER BY timestamp DESC")
+    @Query("SELECT * FROM edit_data WHERE user_id IN (:userIDs) ORDER BY timestamp DESC")
     fun queryByUserIds(vararg userIDs: Long): List<EditData>
 
-    @Query("SELECT * FROM edit_data WHERE userId IN (:userIDs) ORDER BY timestamp DESC")
+    @Query("SELECT * FROM edit_data WHERE user_id IN (:userIDs) ORDER BY timestamp DESC")
     fun rxQueryByUserIds(vararg userIDs: Long): Flowable<List<EditData>>
 
-    @Query("SELECT * FROM edit_data WHERE userId = :userID ORDER BY timestamp DESC")
+    @Query("SELECT * FROM edit_data WHERE user_id = :userID ORDER BY timestamp DESC")
     fun queryByUserIds(userID: Long): List<EditData>
 
-    @Query("SELECT * FROM edit_data WHERE userId = :userID ORDER BY timestamp DESC")
+    @Query("SELECT * FROM edit_data WHERE user_id = :userID ORDER BY timestamp DESC")
     fun rxQueryByUserIds(userID: Long): Flowable<List<EditData>>
 
     @Query("SELECT * FROM edit_data WHERE id = :id")

@@ -11,10 +11,13 @@ import kotlin.math.E
  */
 @Entity(tableName = "edit_data")
 data class EditData(
+        @field:SerializedName("user_id")
         @field: ColumnInfo(name = "user_id")
         val userId: Long,
+        @field:SerializedName("edit_type")
         @field: ColumnInfo(name = "edit_type")
         val editType: Int,
+        @field:SerializedName("edit_data")
         @field: ColumnInfo(name = "edit_data")
         val editData: String,
         @field: PrimaryKey(autoGenerate = true)
@@ -22,7 +25,7 @@ data class EditData(
         val timestamp: Long = System.currentTimeMillis()
 ) {
     companion object {
-        fun get(userId: Long, type: Int, data: String): EditData = EditData(userId, type, data)
+        fun create(userId: Long, type: Int, data: String): EditData = EditData(userId, type, data)
         fun empty(userId: Long): EditData = EditData(userId, -1, "")
     }
 }
